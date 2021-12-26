@@ -237,14 +237,7 @@ impl<T> X11<T> {
         let font_height = unsafe { (*font).ascent + (*font).descent };
 
         let cmap = unsafe { xlib::XDefaultColormap(display, screen) };
-        let mut color = xlib::XColor {
-            pixel: 0,
-            red: 0,
-            green: 0,
-            blue: 0,
-            flags: 0,
-            pad: 0,
-        };
+        let mut color = unsafe { mem::MaybeUninit::uninit().assume_init() };
 
         let bg = ffi::CString::new("#000000")?;
         let cell_bg = if unsafe {
@@ -272,23 +265,10 @@ impl<T> X11<T> {
         let depth = unsafe { xlib::XDefaultDepth(display, screen) };
         let visual = unsafe { xlib::XDefaultVisual(display, screen) };
         let mask = xlib::CWBackPixmap | xlib::CWEventMask;
-        let attrs = &mut xlib::XSetWindowAttributes {
-            background_pixmap: xlib::ParentRelative as u64,
-            background_pixel: 0,
-            border_pixmap: 0,
-            border_pixel: 0,
-            bit_gravity: 0,
-            win_gravity: 0,
-            backing_store: 0,
-            backing_planes: 0,
-            backing_pixel: 0,
-            save_under: 0,
-            event_mask: xlib::KeyPressMask | xlib::KeyReleaseMask | xlib::ExposureMask,
-            do_not_propagate_mask: 0,
-            override_redirect: 0,
-            colormap: 0,
-            cursor: 0,
-        };
+        let mut attrs: xlib::XSetWindowAttributes =
+            unsafe { mem::MaybeUninit::uninit().assume_init() };
+        attrs.background_pixmap = xlib::ParentRelative as u64;
+        attrs.event_mask = xlib::KeyPressMask | xlib::KeyReleaseMask | xlib::ExposureMask;
 
         let window = unsafe {
             xlib::XCreateWindow(
@@ -303,7 +283,7 @@ impl<T> X11<T> {
                 xlib::CopyFromParent as u32,
                 visual,
                 mask,
-                attrs,
+                &mut attrs,
             )
         };
 
