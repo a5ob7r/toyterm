@@ -1,3 +1,7 @@
 # toyterm
 
-Rust port of [eduterm](https://www.uninformativ.de/git/eduterm/).
+A toy terminal emulator.
+
+## Reference
+
+https://www.uninformativ.de/git/eduterm/
