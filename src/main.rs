@@ -66,7 +66,7 @@ impl Pty {
             stat::Mode::empty(),
         )?;
 
-        Ok(Pty { master, slave })
+        Ok(Self { master, slave })
     }
 
     pub fn master(&self) -> raw::c_int {
@@ -173,7 +173,7 @@ impl<T> Default for Term<T> {
             buffers.push(row);
         }
 
-        Term {
+        Self {
             width,
             height,
             x: 0,
@@ -295,7 +295,7 @@ impl<T> X11<T> {
 
         unsafe { xlib::XSync(display, 0) };
 
-        Ok(X11 {
+        Ok(Self {
             display,
             screen,
             root,
